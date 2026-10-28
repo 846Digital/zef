@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Вещь не нашлась — ZEF</title>
+  <style>
+    :root { color-scheme:dark; --paper:#181818; --ink:#f4f2ee; --muted:#b0ada9; --accent:#e93730; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.6 sans-serif; }
+    main { min-height:100svh; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:24px; padding:32px 16px; text-align:center; }
+    .wordmark { font-size:60px; font-weight:700; letter-spacing:-.1em; line-height:1; }
+    .wordmark span { color:var(--accent); }
+    .code,p { color:var(--muted); }
+    h1,p { margin:0; max-width:580px; text-wrap:balance; }
+    h1 { font-size:clamp(30px,5vw,48px); letter-spacing:-.04em; line-height:1.15; }
+    a { color:inherit; text-decoration:none; }
+    .button { display:inline-flex; gap:32px; align-items:center; padding:12px 24px; background:var(--accent); color:var(--ink); font-weight:600; white-space:nowrap; min-height:48px; }
+    a:focus-visible { outline:2px solid var(--ink); outline-offset:4px; }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="wordmark" data-home href="./" aria-label="ZEF — главная">ZEF<span>.</span></a>
+    <span class="code">404</span>
+    <h1>Кажется, не тот поворот.</h1>
+    <p>Эта страница не нашлась. Твой следующий образ — в каталоге.</p>
+    <a class="button" data-home href="./">Вернуться к вещам <span aria-hidden="true">↗</span></a>
+  </main>
+  <script>
+    // Discover this site's index even on a nested Pages 404, without a fixed repo name.
+    (async () => {
+      let directory = new URL('./', location.href);
+      for (let depth = 0; depth < 32; depth++) {
+        try {
+          const response = await fetch(new URL('index.html', directory), { credentials: 'same-origin' });
+          if (response.ok && (await response.text()).includes('name="zef-site" content="night-garage-v1"')) {
+            document.querySelectorAll('[data-home]').forEach(link => link.href = directory.href);
+            return;
+          }
+        } catch (_) { /* Keep the visible relative link when offline. */ }
+        const parent = new URL('../', directory);
+        if (parent.href === directory.href) break;
+        directory = parent;
+      }
+    })();
+  </script>
+</body>
+</html>
